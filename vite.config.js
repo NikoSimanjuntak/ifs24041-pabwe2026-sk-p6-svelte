@@ -1,7 +1,33 @@
+import { copyFileSync, mkdirSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { svelteTesting } from '@testing-library/svelte/vite'
 import tailwindcss from '@tailwindcss/vite'
+
+// Rute statis yang diberi salinan index.html agar server statis biasa
+// (tanpa fallback SPA) tidak mengembalikan 404 saat halaman dibuka langsung.
+const STATIC_ROUTES = ['auth/login', 'auth/register', 'users', 'profile']
+
+function spaFallback() {
+  let outDir = 'dist'
+  return {
+    name: 'spa-fallback',
+    apply: 'build',
+    configResolved(config) {
+      outDir = resolve(config.root, config.build.outDir)
+    },
+    closeBundle() {
+      const indexFile = resolve(outDir, 'index.html')
+      copyFileSync(indexFile, resolve(outDir, '404.html'))
+      for (const route of STATIC_ROUTES) {
+        const target = resolve(outDir, route, 'index.html')
+        mkdirSync(dirname(target), { recursive: true })
+        copyFileSync(indexFile, target)
+      }
+    }
+  }
+}
 
 export default defineConfig(({ mode }) => {
   // APP_PORT tidak berawalan VITE_, sehingga dimuat dengan prefix kosong.
@@ -9,9 +35,11 @@ export default defineConfig(({ mode }) => {
   const port = Number(env.APP_PORT) || 3004
 
   return {
-    plugins: [tailwindcss(), svelte(), svelteTesting()],
-    server: { host: true, port, strictPort: true },
-    preview: { host: true, port, strictPort: true },
+    base: '/',
+    appType: 'spa',
+    plugins: [tailwindcss(), svelte(), svelteTesting(), spaFallback()],
+    server: { host: true, port, strictPort: true, allowedHosts: true },
+    preview: { host: true, port, strictPort: true, allowedHosts: true },
     test: {
       environment: 'jsdom',
       globals: true,
