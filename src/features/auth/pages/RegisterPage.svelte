@@ -37,12 +37,19 @@
 
   <label class="flex flex-col gap-1 text-sm font-medium">
     Nama
-    <input type="text" required bind:value={$name} class="rounded-lg border border-slate-300 px-3 py-2 font-normal" />
+    <input
+      id="register-name-input"
+      type="text"
+      required
+      bind:value={$name}
+      class="rounded-lg border border-slate-300 px-3 py-2 font-normal"
+    />
   </label>
 
   <label class="flex flex-col gap-1 text-sm font-medium">
     Email
     <input
+      id="register-email-input"
       type="email"
       required
       bind:value={$email}
@@ -53,6 +60,7 @@
   <label class="flex flex-col gap-1 text-sm font-medium">
     Kata sandi
     <input
+      id="register-password-input"
       type="password"
       required
       bind:value={$password}
@@ -61,6 +69,7 @@
   </label>
 
   <button
+    id="register-submit-button"
     type="submit"
     disabled={$authState.loading}
     class="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700 disabled:opacity-60"

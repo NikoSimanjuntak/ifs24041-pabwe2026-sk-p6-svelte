@@ -25,6 +25,7 @@
   <label class="flex flex-col gap-1 text-sm font-medium">
     Email
     <input
+      id="login-email-input"
       type="email"
       required
       bind:value={$email}
@@ -35,6 +36,7 @@
   <label class="flex flex-col gap-1 text-sm font-medium">
     Kata sandi
     <input
+      id="login-password-input"
       type="password"
       required
       bind:value={$password}
@@ -43,6 +45,7 @@
   </label>
 
   <button
+    id="login-submit-button"
     type="submit"
     disabled={$authState.loading}
     class="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
