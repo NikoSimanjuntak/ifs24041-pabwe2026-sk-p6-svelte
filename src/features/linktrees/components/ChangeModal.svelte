@@ -1,0 +1,51 @@
+<script>
+  import Modal from '../../../components/Modal.svelte'
+  import { useInput } from '../../../hooks/useInput.js'
+  import { LINK_TREE_TYPES } from '../../../helpers/toolsHelper.js'
+  import { editLinkTree, linkTreesState } from '../states/linkTreesStore.js'
+
+  let { linkTree, onclose, onsaved } = $props()
+
+  const title = useInput(linkTree.title)
+  const type = useInput(linkTree.type)
+  const description = useInput(linkTree.description)
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+    const saved = await editLinkTree(linkTree.id, { title: $title, type: $type, description: $description })
+    if (saved) {
+      onsaved()
+      onclose()
+    }
+  }
+</script>
+
+<Modal title="Ubah Link Tree" {onclose}>
+  <form onsubmit={handleSubmit} class="flex flex-col gap-3">
+    {#if $linkTreesState.mutationError}
+      <p role="alert" class="rounded-lg bg-red-50 p-3 text-sm text-red-700">{$linkTreesState.mutationError}</p>
+    {/if}
+    <label class="flex flex-col gap-1 text-sm font-medium">
+      Judul
+      <input type="text" required bind:value={$title} class="rounded-lg border border-slate-300 px-3 py-2 font-normal" />
+    </label>
+    <label class="flex flex-col gap-1 text-sm font-medium">
+      Tipe
+      <select bind:value={$type} class="rounded-lg border border-slate-300 px-3 py-2 font-normal">
+        {#each LINK_TREE_TYPES as option (option.value)}
+          <option value={option.value}>{option.label}</option>
+        {/each}
+      </select>
+    </label>
+    <label class="flex flex-col gap-1 text-sm font-medium">
+      Deskripsi
+      <textarea rows="3" required bind:value={$description} class="rounded-lg border border-slate-300 px-3 py-2 font-normal"></textarea>
+    </label>
+    <div class="flex justify-end gap-2">
+      <button type="button" onclick={onclose} class="rounded-lg border border-slate-300 px-4 py-2 text-sm">Batal</button>
+      <button type="submit" disabled={$linkTreesState.mutating} class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60">
+        Simpan perubahan
+      </button>
+    </div>
+  </form>
+</Modal>
