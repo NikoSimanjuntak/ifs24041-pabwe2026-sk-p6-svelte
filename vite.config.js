@@ -12,11 +12,11 @@ const STATIC_ROUTES = ['auth/login', 'auth/register', 'users', 'profile', 'link-
 // Rute dinamis /link-trees/:linkTreeId untuk ID 1 sampai 500.
 const LINK_TREE_ROUTES = Array.from({ length: 500 }, (_, index) => `link-trees/${index + 1}`)
 
-// Menyisipkan CSS hasil build ke dalam index.html agar tidak ada
-// stylesheet terpisah yang memblokir render awal halaman.
-function inlineCss() {
+// Menyisipkan CSS dan JavaScript hasil build ke dalam index.html agar tidak
+// ada permintaan terpisah yang memblokir render atau membentuk rantai kritis.
+function inlineAssets() {
   return {
-    name: 'inline-css',
+    name: 'inline-assets',
     apply: 'build',
     transformIndexHtml: {
       order: 'post',
@@ -24,11 +24,18 @@ function inlineCss() {
         if (!bundle) return html
         let result = html
         for (const [fileName, asset] of Object.entries(bundle)) {
-          if (!fileName.endsWith('.css')) continue
-          result = result.replace(/<link[^>]+rel="stylesheet"[^>]*>/g, (tag) =>
-            tag.includes(fileName) ? `<style>${asset.source}</style>` : tag
-          )
-          delete bundle[fileName]
+          if (fileName.endsWith('.css')) {
+            result = result.replace(/<link[^>]+rel="stylesheet"[^>]*>/g, (tag) =>
+              tag.includes(fileName) ? `<style>${asset.source}</style>` : tag
+            )
+            delete bundle[fileName]
+          } else if (fileName.endsWith('.js') && asset.isEntry) {
+            const code = asset.code.replace(/<\/script/gi, '<\\/script')
+            result = result.replace(/<script[^>]+type="module"[^>]*><\/script>/g, (tag) =>
+              tag.includes(fileName) ? `<script type="module">${code}</script>` : tag
+            )
+            delete bundle[fileName]
+          }
         }
         return result
       }
@@ -64,7 +71,7 @@ export default defineConfig(({ mode }) => {
   return {
     base: '/',
     appType: 'spa',
-    plugins: [tailwindcss(), svelte(), svelteTesting(), inlineCss(), spaFallback()],
+    plugins: [tailwindcss(), svelte(), svelteTesting(), inlineAssets(), spaFallback()],
     server: { host: true, port, strictPort: true, allowedHosts: true },
     preview: { host: true, port, strictPort: true, allowedHosts: true },
     test: {
