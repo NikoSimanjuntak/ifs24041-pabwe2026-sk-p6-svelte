@@ -142,8 +142,11 @@
         </ul>
       {/if}
     </div>
-  {:else if $linkTreesState.loading}
-    <p class="text-slate-600">Memuat detail link tree...</p>
+  {:else}
+    <h1 class="text-2xl font-bold text-slate-900">Detail Link Tree</h1>
+    {#if $linkTreesState.loading}
+      <p class="text-slate-600">Memuat detail link tree...</p>
+    {/if}
   {/if}
 </section>
 
