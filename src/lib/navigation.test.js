@@ -43,6 +43,7 @@ describe('navigation', () => {
 
     action.destroy()
     navigate('/')
+    anchor.addEventListener('click', (clickEvent) => clickEvent.preventDefault())
     anchor.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
     expect(get(currentPath)).toBe('/')
   })

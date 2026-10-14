@@ -48,7 +48,7 @@ describe('HomePage', () => {
     expect(screen.getByAltText('Sampul Kursus Ku')).toBeInTheDocument()
     expect(screen.queryByAltText('Sampul Catatan Budi')).not.toBeInTheDocument()
 
-    const stat = (label) => screen.getByText(label).parentElement.querySelector('dd').textContent
+    const stat = (label) => screen.getByText(label, { selector: 'dt' }).parentElement.querySelector('dd').textContent
     expect(stat('Total Link Tree')).toBe('3')
     expect(stat('Publik')).toBe('1')
     expect(stat('Tidak Terdaftar')).toBe('1')

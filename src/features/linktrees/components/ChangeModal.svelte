@@ -6,8 +6,11 @@
 
   let { linkTree, onclose, onsaved } = $props()
 
+  // svelte-ignore state_referenced_locally
   const title = useInput(linkTree.title)
+  // svelte-ignore state_referenced_locally
   const type = useInput(linkTree.type)
+  // svelte-ignore state_referenced_locally
   const description = useInput(linkTree.description)
 
   async function handleSubmit(event) {

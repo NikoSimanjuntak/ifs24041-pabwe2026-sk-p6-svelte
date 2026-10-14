@@ -6,7 +6,9 @@
 
   let { linkTreeId, item, onclose, onsaved } = $props()
 
+  // svelte-ignore state_referenced_locally
   const title = useInput(item ? item.title : '')
+  // svelte-ignore state_referenced_locally
   const url = useInput(item ? item.url : '')
   let localError = $state(null)
 
