@@ -12,6 +12,30 @@ const STATIC_ROUTES = ['auth/login', 'auth/register', 'users', 'profile', 'link-
 // Rute dinamis /link-trees/:linkTreeId untuk ID 1 sampai 500.
 const LINK_TREE_ROUTES = Array.from({ length: 500 }, (_, index) => `link-trees/${index + 1}`)
 
+// Menyisipkan CSS hasil build ke dalam index.html agar tidak ada
+// stylesheet terpisah yang memblokir render awal halaman.
+function inlineCss() {
+  return {
+    name: 'inline-css',
+    apply: 'build',
+    transformIndexHtml: {
+      order: 'post',
+      handler(html, { bundle }) {
+        if (!bundle) return html
+        let result = html
+        for (const [fileName, asset] of Object.entries(bundle)) {
+          if (!fileName.endsWith('.css')) continue
+          result = result.replace(/<link[^>]+rel="stylesheet"[^>]*>/g, (tag) =>
+            tag.includes(fileName) ? `<style>${asset.source}</style>` : tag
+          )
+          delete bundle[fileName]
+        }
+        return result
+      }
+    }
+  }
+}
+
 function spaFallback() {
   let outDir = 'dist'
   return {
@@ -40,7 +64,7 @@ export default defineConfig(({ mode }) => {
   return {
     base: '/',
     appType: 'spa',
-    plugins: [tailwindcss(), svelte(), svelteTesting(), spaFallback()],
+    plugins: [tailwindcss(), svelte(), svelteTesting(), inlineCss(), spaFallback()],
     server: { host: true, port, strictPort: true, allowedHosts: true },
     preview: { host: true, port, strictPort: true, allowedHosts: true },
     test: {
