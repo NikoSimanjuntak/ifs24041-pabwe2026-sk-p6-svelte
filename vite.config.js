@@ -5,9 +5,12 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { svelteTesting } from '@testing-library/svelte/vite'
 import tailwindcss from '@tailwindcss/vite'
 
-// Rute statis yang diberi salinan index.html agar server statis biasa
+// Rute yang diberi salinan index.html agar server statis biasa
 // (tanpa fallback SPA) tidak mengembalikan 404 saat halaman dibuka langsung.
-const STATIC_ROUTES = ['auth/login', 'auth/register', 'users', 'profile']
+const STATIC_ROUTES = ['auth/login', 'auth/register', 'users', 'profile', 'link-trees']
+
+// Rute dinamis /link-trees/:linkTreeId untuk ID 1 sampai 500.
+const LINK_TREE_ROUTES = Array.from({ length: 500 }, (_, index) => `link-trees/${index + 1}`)
 
 function spaFallback() {
   let outDir = 'dist'
@@ -20,7 +23,7 @@ function spaFallback() {
     closeBundle() {
       const indexFile = resolve(outDir, 'index.html')
       copyFileSync(indexFile, resolve(outDir, '404.html'))
-      for (const route of STATIC_ROUTES) {
+      for (const route of [...STATIC_ROUTES, ...LINK_TREE_ROUTES]) {
         const target = resolve(outDir, route, 'index.html')
         mkdirSync(dirname(target), { recursive: true })
         copyFileSync(indexFile, target)
