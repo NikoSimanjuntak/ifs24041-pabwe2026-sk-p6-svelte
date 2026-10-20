@@ -1,7 +1,6 @@
 <script>
   import Modal from '../../../components/Modal.svelte'
   import { useInput } from '../../../hooks/useInput.js'
-  import { LINK_TREE_TYPES } from '../../../helpers/toolsHelper.js'
   import { addLinkTree, linkTreesState } from '../states/linkTreesStore.js'
 
   let { onclose, onsaved } = $props()
@@ -32,9 +31,9 @@
     <label class="flex flex-col gap-1 text-sm font-medium">
       Tipe
       <select bind:value={$type} class="rounded-lg border border-slate-300 px-3 py-2 font-normal">
-        {#each LINK_TREE_TYPES as option (option.value)}
-          <option value={option.value}>{option.label}</option>
-        {/each}
+        <option value="public">Publik</option>
+        <option value="unlisted">Tidak Terdaftar</option>
+        <option value="private">Privat</option>
       </select>
     </label>
     <label class="flex flex-col gap-1 text-sm font-medium">

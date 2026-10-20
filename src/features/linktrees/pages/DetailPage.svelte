@@ -24,6 +24,11 @@
   const detail = $derived($linkTreesState.detail)
   const isOwner = $derived($authUser !== null && detail !== null && detail.user_id === $authUser.id)
 
+  const coverAlt = (tree) => `Sampul ${tree.title}`
+  const byline = (tree) => `oleh ${tree.author.name} · dibuat ${formatDate(tree.created_at)}`
+  const editLabel = (item) => `Ubah ${item.title}`
+  const deleteLabel = (item) => `Hapus ${item.title}`
+
   const load = () => fetchLinkTree(params.linkTreeId)
 
   onMount(() => {
@@ -73,7 +78,7 @@
   {#if detail}
     <article class="overflow-hidden rounded-xl border border-slate-200 bg-white">
       {#if hasCover(detail.cover)}
-        <img src={detail.cover} alt="Sampul {detail.title}" class="h-48 w-full object-cover" />
+        <img src={detail.cover} alt={coverAlt(detail)} class="h-48 w-full object-cover" />
       {:else}
         <div class="flex h-48 w-full items-center justify-center bg-indigo-50">
           <LogoIcon size={56} />
@@ -85,9 +90,7 @@
           <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs">{typeLabel(detail.type)}</span>
         </div>
         <p class="text-slate-700">{detail.description}</p>
-        <p class="text-sm text-slate-500">
-          oleh {detail.author.name} &middot; dibuat {formatDate(detail.created_at)}
-        </p>
+        <p class="text-sm text-slate-500">{byline(detail)}</p>
 
         {#if isOwner}
           <div class="flex flex-wrap gap-2">
@@ -129,10 +132,10 @@
               </div>
               {#if isOwner}
                 <div class="flex shrink-0 gap-2 text-sm">
-                  <button type="button" onclick={() => openEditItem(item)} aria-label="Ubah {item.title}" class="text-slate-700 hover:underline">
+                  <button type="button" onclick={() => openEditItem(item)} aria-label={editLabel(item)} class="text-slate-700 hover:underline">
                     Ubah
                   </button>
-                  <button type="button" onclick={() => handleDeleteItem(item)} aria-label="Hapus {item.title}" class="text-red-600 hover:underline">
+                  <button type="button" onclick={() => handleDeleteItem(item)} aria-label={deleteLabel(item)} class="text-red-600 hover:underline">
                     Hapus
                   </button>
                 </div>

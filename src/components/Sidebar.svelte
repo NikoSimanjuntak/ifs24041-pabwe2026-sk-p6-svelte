@@ -12,6 +12,16 @@
   function isActive(href, path) {
     return href === '/' ? path === '/' || path.startsWith('/link-trees') : path === href
   }
+
+  function linkClass(href, path) {
+    return isActive(href, path)
+      ? 'rounded-lg px-3 py-2 text-sm font-medium bg-indigo-50 text-indigo-700'
+      : 'rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100'
+  }
+
+  function ariaCurrent(href, path) {
+    return isActive(href, path) ? 'page' : undefined
+  }
 </script>
 
 <aside
@@ -24,10 +34,8 @@
         href={item.href}
         use:link
         onclick={onclose}
-        aria-current={isActive(item.href, $currentPath) ? 'page' : undefined}
-        class="rounded-lg px-3 py-2 text-sm font-medium {isActive(item.href, $currentPath)
-          ? 'bg-indigo-50 text-indigo-700'
-          : 'text-slate-600 hover:bg-slate-100'}"
+        aria-current={ariaCurrent(item.href, $currentPath)}
+        class={linkClass(item.href, $currentPath)}
       >
         {item.label}
       </a>

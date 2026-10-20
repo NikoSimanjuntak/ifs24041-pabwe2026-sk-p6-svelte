@@ -10,7 +10,6 @@
     removeLinkTree,
     resetLinkTreesFlags
   } from '../states/linkTreesStore.js'
-  import { assetUrl } from '../../../helpers/apiHelper.js'
   import { hasCover, typeLabel } from '../../../helpers/toolsHelper.js'
   import { link } from '../../../lib/navigation.js'
 
@@ -19,6 +18,11 @@
   let showAdd = $state(false)
 
   const load = () => fetchLinkTrees({ isMe: onlyMine })
+
+  const coverAlt = (item) => `Sampul ${item.title}`
+  const detailHref = (item) => `/link-trees/${item.id}`
+  const byline = (item) => `oleh ${item.author.name} · ${item.total_links} tautan`
+  const deleteLabel = (item) => `Hapus ${item.title}`
 
   onMount(() => {
     resetLinkTreesFlags()
@@ -123,7 +127,7 @@
       {#each filtered as item (item.id)}
         <li class="overflow-hidden rounded-xl border border-slate-200 bg-white">
           {#if hasCover(item.cover)}
-            <img src={item.cover} alt="Sampul {item.title}" class="h-32 w-full object-cover" />
+            <img src={item.cover} alt={coverAlt(item)} class="h-32 w-full object-cover" />
           {:else}
             <div class="flex h-32 w-full items-center justify-center bg-indigo-50">
               <LogoIcon size={40} />
@@ -131,20 +135,18 @@
           {/if}
           <div class="flex flex-col gap-2 p-4">
             <div class="flex items-start justify-between gap-2">
-              <a href="/link-trees/{item.id}" use:link class="font-semibold text-slate-900 hover:text-indigo-600">
+              <a href={detailHref(item)} use:link class="font-semibold text-slate-900 hover:text-indigo-600">
                 {item.title}
               </a>
               <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs">{typeLabel(item.type)}</span>
             </div>
             <p class="line-clamp-2 text-sm text-slate-600">{item.description}</p>
-            <p class="text-xs text-slate-500">
-              oleh {item.author.name} &middot; {item.total_links} tautan
-            </p>
+            <p class="text-xs text-slate-500">{byline(item)}</p>
             {#if $authUser && item.user_id === $authUser.id}
               <button
                 type="button"
                 onclick={() => handleDelete(item)}
-                aria-label="Hapus {item.title}"
+                aria-label={deleteLabel(item)}
                 class="self-start text-sm text-red-600 hover:underline"
               >
                 Hapus
